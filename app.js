@@ -7,12 +7,17 @@ var app        = express();
 app.use(express.urlencoded());
 
 var redisHost;
-app.on('listening', function () {
-});
+if(process.env.CHANNEL == 'docker') {
+  redisHost = 'redis';
+  console.log('Working inside a Docker container. Using containerized redis store.');
+} else {
+  redisHost = '127.0.0.1';
+  console.log('Docker environment not set. Using local redis store.');
+}
 
 app.use(session({
   store: new RedisStore({
-    host: '127.0.0.1',
+    host: redisHost,
     port: 6379,
   }),
   secret: '•ᴗ•',
@@ -37,22 +42,17 @@ app.get('/', function (req, res) {
 });
 
 app.post('/login', function (req, res) {
+  console.log('Authenticated ' + req.body.name);
   req.session.name = req.body.name;
   res.redirect('/');
 });
 
 app.get('/logout', function(req, res) {
+  console.log('Deauthorized ' + req.session.name);
   req.session.destroy();
   res.redirect('/');
 });
 
 app.listen(8000, function () {
-  if(process.env.CHANNEL == 'docker') {
-    redisHost = 'redis';
-    console.log('Working inside a Docker container. Using containerized redis store.');
-  } else {
-    redisHost = '127.0.0.1';
-    console.log('Docker environment not set. Using local redis store.');
-  }
 });
 
