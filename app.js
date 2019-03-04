@@ -6,6 +6,10 @@ var app        = express();
 
 app.use(express.urlencoded());
 
+var redisHost;
+app.on('listening', function () {
+});
+
 app.use(session({
   store: new RedisStore({
     host: '127.0.0.1',
@@ -42,7 +46,13 @@ app.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+app.listen(8000, function () {
+  if(process.env.CHANNEL == 'docker') {
+    redisHost = 'redis';
+    console.log('Working inside a Docker container. Using containerized redis store.');
+  } else {
+    redisHost = '127.0.0.1';
+    console.log('Docker environment not set. Using local redis store.');
+  }
 });
 
