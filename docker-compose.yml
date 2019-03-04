@@ -6,11 +6,15 @@ services:
       - "8000:8000"
     environment:
       - CHANNEL=docker
+    depends_on:
+      - redis
   frontend2:
     build: .
     ports:
       - "8001:8000"
     environment:
       - CHANNEL=docker
+    depends_on:
+      - redis
   redis:
     image: "redis:alpine"
