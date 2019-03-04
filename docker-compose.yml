@@ -1,0 +1,16 @@
+version: '3'
+services:
+  frontend1:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - CHANNEL=docker
+  frontend2:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      - CHANNEL=docker
+  redis:
+    image: "redis:alpine"
